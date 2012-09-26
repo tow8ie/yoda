@@ -1,0 +1,15 @@
+{
+  "name": "yui-loader-test",
+  "version": "0.1.0",
+  "description": "This should test a one codebase of YUI modularized code can be loaded in the browser either:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "yui": "~3.7.2"
+  }
+}
