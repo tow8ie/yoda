@@ -68,7 +68,7 @@ var compress = function (javascript) {
   return uglify.gen_code(ast);
 };
 
-var compile = function (Y) {
+var compile = function (modules) {
   modules.push(moduleToLoad);
   console.log('Computed modules:', modules);
 
@@ -84,20 +84,28 @@ var compile = function (Y) {
   fs.writeFileSync(outputFilePath, output, 'utf8');
 };
 
-modules = [];
+var patchModuleExtraction = function (YUI, modules) {
+  var originalAdd = YUI.add;
 
-YUI.__add__ = YUI.add;
-YUI.add = function (name, fn, version, details) {
-  if (details) {
-    dependencies = details.requires;
-    dependencies.forEach(function (dependency) {
-      if (modules.indexOf(dependency) == -1) {
-        modules.unshift(dependency);
-      }
-    });
+  YUI.add = function (name, fn, version, details) {
+    if (details) {
+      dependencies = details.requires;
+      dependencies.forEach(function (dependency) {
+        if (modules.indexOf(dependency) == -1) {
+          modules.unshift(dependency);
+        }
+      });
+    }
+
+    var noop = function () {};
+    originalAdd.call(this, name, noop, version, details);
   }
-  YUI.__add__.call(this, name, function () {}, version, details);
-}
+};
 
-YUI(config).use(moduleToLoad, compile);
+modules = [];
+patchModuleExtraction(YUI, modules);
+
+YUI(config).use(moduleToLoad, function(Y) {
+  compile(modules);
+});
 
