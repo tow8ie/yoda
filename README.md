@@ -1,7 +1,10 @@
-This should test a one codebase of YUI modularized code can be loaded in the
-browser either:
+This demonstrates how a YUI modularized code base can be loaded in the browser
+either:
 
-1. Dynamically
+1. Dynamically (scripts are requested by browser)
 2. Statically (precompiled via Node.js)
-3. Statically (via a Node.js comboloader)
+
+To compile the JavaScript use:
+
+    ./js/compiler.js --base-dir js/ --module a --output-file js/application-compiled.js
 

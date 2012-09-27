@@ -5,14 +5,25 @@ var YUI = require('yui').YUI,
     fs = require('fs'),
     application = require('./main.js');
 
-var argumentList = process.argv.splice(2);
+var argv = require('optimist')
+           .usage('Usage: $0 --base-dir js/ --module moduleName --output-file path/to/file.js')
+           .demand(['base-dir', 'module', 'output-file'])
+           .alias('b', 'base-dir')
+           .alias('m', 'module')
+           .alias('o', 'output-file')
+           .describe('base-dir', 'Path to directory where the JS files can be found on disc. ' +
+                                 'This directory must also include the main.js file.')
+           .describe('module', 'YUI module name (not path) of the first module to load')
+           .describe('output-file', 'Path to compiled JS file')
+           .argv;
 
-if (argumentList.length !== 1) {
-  console.log('Usage: compiler.js moduleName')
-  process.exit(1);
-}
+var baseDirPath = path.resolve(path.join('.', argv['base-dir']));
+var moduleToLoad = argv.module;
+var outputFilePath = path.resolve(path.join('.', argv['output-file']));
 
-var moduleToLoad = argumentList[0];
+console.log('Base Dir path:', baseDirPath);
+console.log('Module to load:', moduleToLoad);
+console.log('Output file path:', outputFilePath);
 
 var config = YUI().merge(application.config, {
   base: './js/'
@@ -38,7 +49,7 @@ var resolveModules = function (modules) {
 
   var loader = new Y.Loader(
     YUI().merge(config, {
-      ignoreRegistered: true, // Needed, don’t know why.
+      ignoreRegistered: true,
       require: modules
     })
   );
@@ -60,9 +71,10 @@ YUI(config).use(moduleToLoad, function (Y) {
     str.push(fs.readFileSync(file, 'utf8'));
   });
     
-  str.push(fs.readFileSync('./js/main.js', 'utf8'));
+  var mainFilePath = path.join(baseDirPath, 'main.js');
+  str.push(fs.readFileSync(mainFilePath, 'utf8'));
 
-  fs.writeFileSync('./js/main-compiled.js', str.join('\n'), 'utf8');
+  fs.writeFileSync(outputFilePath, str.join('\n'), 'utf8');
 
 });
 

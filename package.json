@@ -10,6 +10,7 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "yui": "~3.7.2"
+    "yui": "~3.7.2",
+    "optimist": "~0.3.4"
   }
 }
