@@ -22,32 +22,17 @@ var moduleToLoad = argv.module;
 var outputFilePath = path.resolve(path.join('.', argv['output-file']));
 var compressionRequested = !!argv.compress;
 
-var YUI  = require('yui').YUI,
-    main = require(mainFilePath);
-
 console.log('Base Dir path:', baseDirPath);
 console.log('Module to load:', moduleToLoad);
 console.log('Output file path:', outputFilePath);
 console.log('Compression:', compressionRequested);
 
+var YUI  = require('yui').YUI,
+    main = require(mainFilePath);
+
 var config = YUI().merge(main.config, {
   base: './js/'
 });
-
-modules = [];
-
-YUI.__add__ = YUI.add;
-YUI.add = function (name, fn, version, details) {
-  if (details) {
-    dependencies = details.requires;
-    dependencies.forEach(function (dependency) {
-      if (modules.indexOf(dependency) == -1) {
-        modules.unshift(dependency);
-      }
-    });
-  }
-  YUI.__add__.call(this, name, function () {}, version, details);
-}
 
 var resolveModules = function (modules) {
   var Y = YUI();
@@ -60,7 +45,7 @@ var resolveModules = function (modules) {
   );
 
   return loader.resolve(true);
-}
+};
 
 var concatModules = function (modules, mainFilePath) {
   var str = [];
@@ -81,10 +66,9 @@ var compress = function (javascript) {
   ast = uglify.ast_mangle(ast);
   ast = uglify.ast_squeeze(ast);
   return uglify.gen_code(ast);
-}
+};
 
-YUI(config).use(moduleToLoad, function (Y) {
-
+var compile = function (Y) {
   modules.push(moduleToLoad);
   console.log('Computed modules:', modules);
 
@@ -98,6 +82,22 @@ YUI(config).use(moduleToLoad, function (Y) {
   }
 
   fs.writeFileSync(outputFilePath, output, 'utf8');
+};
 
-});
+modules = [];
+
+YUI.__add__ = YUI.add;
+YUI.add = function (name, fn, version, details) {
+  if (details) {
+    dependencies = details.requires;
+    dependencies.forEach(function (dependency) {
+      if (modules.indexOf(dependency) == -1) {
+        modules.unshift(dependency);
+      }
+    });
+  }
+  YUI.__add__.call(this, name, function () {}, version, details);
+}
+
+YUI(config).use(moduleToLoad, compile);
 
