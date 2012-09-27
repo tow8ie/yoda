@@ -17,11 +17,11 @@
 
   var modulesToLoad = ['a'];
 
-  var runningInBrowser = function () {
-    return (typeof window !== 'undefined');
+  var isBrowser = function () {
+    return !!(typeof window !== 'undefined' && navigator && document);
   };
 
-  if (runningInBrowser()) {
+  if (isBrowser()) {
 
     YUI(config).use(modulesToLoad);
 
