@@ -17,12 +17,20 @@
 
   var modulesToLoad = ['a'];
 
-  if (typeof YUI !== 'undefined') {
-    YUI(config).use(modulesToLoad);
-  }
+  var runningInBrowser = function () {
+    return (typeof window !== 'undefined');
+  };
 
-  exports.config = config;
-  exports.modulesToLoad = modulesToLoad;
+  if (runningInBrowser()) {
+
+    YUI(config).use(modulesToLoad);
+
+  } else {
+
+    exports.config = config;
+    exports.modulesToLoad = modulesToLoad;
+
+  }
 
 })(typeof exports === 'undefined' ? window : exports);
 
