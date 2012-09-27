@@ -16,7 +16,6 @@ var path = require('path'),
            .describe('compress', 'Whether to compress the JavaScript code with UglifyJS.')
            .argv;
 
-
 var baseDirPath = path.resolve(path.join('.', argv['base-dir']));
 var mainFilePath = path.join(baseDirPath, 'main.js');
 var moduleToLoad = argv.module;
@@ -63,6 +62,17 @@ var resolveModules = function (modules) {
   return loader.resolve(true);
 }
 
+var concatModules = function (modules, mainFilePath) {
+  var str = [];
+
+  modules.forEach(function(file) {
+    str.push(fs.readFileSync(file, 'utf8'));
+  });
+
+  str.push(fs.readFileSync(mainFilePath, 'utf8'));
+  return str.join('\n');
+};
+
 var compress = function (javascript) {
   var parser = require("uglify-js").parser;
   var uglify = require("uglify-js").uglify;
@@ -81,15 +91,7 @@ YUI(config).use(moduleToLoad, function (Y) {
   var resolvedModules = resolveModules(modules).js;
   console.log('Resolved modules:', resolvedModules);
 
-  var str = [];
-
-  resolvedModules.forEach(function(file) {
-    str.push(fs.readFileSync(file, 'utf8'));
-  });
-
-
-  str.push(fs.readFileSync(mainFilePath, 'utf8'));
-  var output = str.join('\n');
+  var output = concatModules(resolvedModules, mainFilePath);
 
   if (compressionRequested) {
     output = compress(output);
