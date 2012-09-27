@@ -1,7 +1,18 @@
+#!/usr/bin/env node
+
 var YUI = require('yui').YUI,
     path = require('path'),
     fs = require('fs'),
-    application = require('./application.js');
+    application = require('./main.js');
+
+var argumentList = process.argv.splice(2);
+
+if (argumentList.length !== 1) {
+  console.log('Usage: compiler.js moduleName')
+  process.exit(1);
+}
+
+var moduleToLoad = argumentList[0];
 
 var config = YUI().merge(application.config, {
   base: './js/'
@@ -22,7 +33,7 @@ YUI.add = function (name, fn, version, details) {
   YUI.__add__.call(this, name, function () {}, version, details);
 }
 
-var resolve_modules = function (modules) {
+var resolveModules = function (modules) {
   var Y = YUI();
 
   var loader = new Y.Loader(
@@ -35,25 +46,23 @@ var resolve_modules = function (modules) {
   return loader.resolve(true);
 }
 
-YUI(config).use(application.modulesToLoad, function (Y) {
+YUI(config).use(moduleToLoad, function (Y) {
 
-  application.modulesToLoad.forEach(function (module) {
-    modules.push(module);
-  });
+  modules.push(moduleToLoad);
   console.log('Computed modules:', modules);
 
-  var resolved_modules = resolve_modules(modules).js;
-  console.log('Resolved modules:', resolved_modules);
+  var resolvedModules = resolveModules(modules).js;
+  console.log('Resolved modules:', resolvedModules);
 
   var str = [];
 
-  resolved_modules.forEach(function(file) {
+  resolvedModules.forEach(function(file) {
     str.push(fs.readFileSync(file, 'utf8'));
   });
     
-  str.push(fs.readFileSync('./js/application.js', 'utf8'));
+  str.push(fs.readFileSync('./js/main.js', 'utf8'));
 
-  fs.writeFileSync('./js/application-compiled.js', str.join('\n'), 'utf8');
+  fs.writeFileSync('./js/main-compiled.js', str.join('\n'), 'utf8');
 
 });
 
