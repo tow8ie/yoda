@@ -3,14 +3,16 @@
 var path = require('path'),
     fs   = require('fs'),
     argv = require('optimist')
-           .usage('Usage: $0 --base-dir js/ --module moduleName --output-file path/to/file.js [options]')
-           .demand(['base-dir', 'module', 'output-file'])
+           .usage('Usage: $0 --base-dir js/ --yui-lib-dir node_modules/yui --module moduleName --output-file path/to/file.js [options]')
+           .demand(['base-dir', 'yui-lib-dir', 'module', 'output-file'])
            .alias('b', 'base-dir')
+           .alias('y', 'yui-lib-dir')
            .alias('m', 'module')
            .alias('o', 'output-file')
            .alias('c', 'compress')
            .describe('base-dir', 'Path to directory where the JS files can be found on disc. ' +
                                  'This directory must also include the main.js file.')
+           .describe('yui-lib-dir', 'Path to the YUI library directory.')
            .describe('module', 'YUI module name (not path) of the first module to load.')
            .describe('output-file', 'Path to compiled JS file.')
            .describe('compress', 'Whether to compress the JavaScript code with UglifyJS.')
@@ -18,21 +20,31 @@ var path = require('path'),
 
 var baseDirPath = path.resolve(path.join('.', argv['base-dir']));
 var mainFilePath = path.join(baseDirPath, 'main.js');
+var yuiLibDirPath = path.resolve(path.join('.', argv['yui-lib-dir']));
+var moduleConfigFilePath = path.join(baseDirPath, 'module_config.js');
 var moduleToLoad = argv.module;
 var outputFilePath = path.resolve(path.join('.', argv['output-file']));
 var compressionRequested = !!argv.compress;
 
-console.log('Base Dir path:', baseDirPath);
+var YUI = require('yui').YUI,
+    moduleConfig = require(moduleConfigFilePath).moduleConfig;
+
+moduleConfig = YUI().merge(moduleConfig, { base: baseDirPath + '/' })
+
+var config = {
+  base: yuiLibDirPath + '/',
+  groups: {
+    main: moduleConfig
+  }
+}
+
+console.log('Base dir path:', baseDirPath);
+console.log('YUI lib dir path:', yuiLibDirPath);
+console.log('Module config:', config);
+console.log('Module config path:', moduleConfigFilePath);
 console.log('Module to load:', moduleToLoad);
 console.log('Output file path:', outputFilePath);
 console.log('Compression:', compressionRequested);
-
-var YUI  = require('yui').YUI,
-    main = require(mainFilePath);
-
-var config = YUI().merge(main.config, {
-  base: './js/'
-});
 
 var resolveModules = function (modules) {
   var Y = YUI();

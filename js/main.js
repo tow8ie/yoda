@@ -1,62 +1,44 @@
-(function (exports){
+(function (window){
 
-  var config = {
-    base: 'js/',
-    modules: {
-      'a': {
-        path: 'a.js'
-      },
-      'b': {
-        path: 'b.js'
-      },
-      'c': {
-        path: 'c.js'
-      }
+  if (typeof console === "undefined") {
+    window.console = {
+      log:   function() {},
+      error: function() {},
+      info:  function() {},
+      debug: function() {}
     }
-  };
+  }
 
-  var isBrowser = function () {
-    return !!(typeof window !== 'undefined' && navigator && document);
-  };
+  var config = window.moduleConfig;
 
-  var log = function (message) {
-    if (typeof console !== 'undefined') {
-      console.log(message);
-    }
-  };
+  if (typeof config === "undefined") {
+    console.error('No global variable "moduleConfig" with module definitions found.')
+    return;
+  }
 
-  if (isBrowser()) {
+  var mainScriptTag = document.getElementById('main-script');
+  if (mainScriptTag) {
 
-    var mainScriptTag = document.getElementById('main-script');
+    var moduleToLoad = mainScriptTag.getAttribute('data-main');
+    if (moduleToLoad) {
 
-    if (mainScriptTag) {
-
-      var moduleToLoad = mainScriptTag.getAttribute('data-main');
-      if (moduleToLoad) {
-
-        YUI(config).use(moduleToLoad);
-
-      } else {
-
-        log('The script tag with id "main-script" does not have a "data-main" attribute.' +
-            ' Insert something like ' +
-            '\'<script src="main.js" id="main-script" data-main="module-to-load"></script>\'.');
-
-      }
+      YUI(config).use(moduleToLoad);
 
     } else {
 
-      log('No script tag found with id "main-script". ' +
-          'Insert something like ' +
+      console.error('The script tag with id "main-script" does not have a "data-main" attribute.' +
+          ' Insert something like ' +
           '\'<script src="main.js" id="main-script" data-main="module-to-load"></script>\'.');
 
     }
 
   } else {
 
-    exports.config = config;
+    console.error('No script tag found with id "main-script". ' +
+        'Insert something like ' +
+        '\'<script src="main.js" id="main-script" data-main="module-to-load"></script>\'.');
 
   }
 
-})(typeof exports === 'undefined' ? window : exports);
+})(window);
 

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "This should test a one codebase of YUI modularized code can be loaded in the browser either:",
   "main": "index.js",
+  "bin": {
+    "compiler": "./js/compiler.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
