@@ -1,7 +1,7 @@
 {
-  "name": "yui-loader-test",
+  "name": "yui-loader-strategies",
   "version": "0.1.0",
-  "description": "This should test a one codebase of YUI modularized code can be loaded in the browser either:",
+  "description": "This will get a useful description sometime.",
   "main": "index.js",
   "bin": {
     "compiler": "./js/compiler.js"
