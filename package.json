@@ -1,7 +1,7 @@
 {
-  "name": "yui-loader-strategies",
+  "name": "yoda",
   "version": "0.1.0",
-  "description": "This will get a useful description sometime.",
+  "description": "Yoda loads YUI modules and compiles them.",
   "main": "index.js",
   "bin": {
     "compiler": "./js/compiler.js"
