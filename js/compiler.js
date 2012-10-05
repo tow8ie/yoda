@@ -10,8 +10,7 @@ var path = require('path'),
            .alias('m', 'module')
            .alias('o', 'output-file')
            .alias('c', 'compress')
-           .describe('base-dir', 'Path to directory where the JS files can be found on disc. ' +
-                                 'This directory must also include the main.js file.')
+           .describe('base-dir', 'Path to directory where the JS files can be found on disc.')
            .describe('yui-lib-dir', 'Path to the YUI library directory.')
            .describe('module', 'YUI module name (not path) of the first module to load.')
            .describe('output-file', 'Path to compiled JS file.')
@@ -19,7 +18,7 @@ var path = require('path'),
            .argv;
 
 var baseDirPath = path.resolve(path.join('.', argv['base-dir']));
-var mainFilePath = path.join(baseDirPath, 'main.js');
+var mainFilePath = path.resolve(path.join(__dirname, 'main.js'));
 var yuiLibDirPath = path.resolve(path.join('.', argv['yui-lib-dir']));
 var moduleConfigFilePath = path.join(baseDirPath, 'module_config.js');
 var moduleToLoad = argv.module;
@@ -39,6 +38,7 @@ var config = {
 }
 
 console.log('Base dir path:', baseDirPath);
+console.log('Main file path: ', mainFilePath);
 console.log('YUI lib dir path:', yuiLibDirPath);
 console.log('Module config:', config);
 console.log('Module config path:', moduleConfigFilePath);
