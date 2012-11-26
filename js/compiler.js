@@ -10,17 +10,19 @@ var path = require('path'),
            .alias('m', 'module')
            .alias('o', 'output-file')
            .alias('c', 'compress')
+           .alias('f', 'config')
            .describe('base-dir', 'Path to directory where the JS files can be found on disc.')
            .describe('yui-lib-dir', 'Path to the YUI library directory.')
            .describe('module', 'YUI module name (not path) of the first module to load.')
            .describe('output-file', 'Path to compiled JS file.')
            .describe('compress', 'Whether to compress the JavaScript code with UglifyJS.')
+           .describe('config', 'Path to module config file (defaults to module_config.js in `base-dir`).')
            .argv;
 
 var baseDirPath = path.resolve(path.join('.', argv['base-dir']));
 var mainFilePath = path.resolve(path.join(__dirname, 'main.js'));
 var yuiLibDirPath = path.resolve(path.join('.', argv['yui-lib-dir']));
-var moduleConfigFilePath = path.join(baseDirPath, 'module_config.js');
+var moduleConfigFilePath = argv.config ? path.resolve(path.join('.', argv.config)) : path.join(baseDirPath, 'module_config.js');
 var moduleToLoad = argv.module;
 var outputFilePath = path.resolve(path.join('.', argv['output-file']));
 var compressionRequested = !!argv.compress;
