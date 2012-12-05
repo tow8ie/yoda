@@ -30,14 +30,10 @@ var compressionRequested = !!argv.compress;
 var YUI = require('yui').YUI,
     moduleConfig = require(moduleConfigFilePath).moduleConfig;
 
-moduleConfig = YUI().merge(moduleConfig, { base: baseDirPath + '/' })
-
-var config = {
-  base: yuiLibDirPath + '/',
-  groups: {
-    main: moduleConfig
-  }
-}
+config = YUI().merge(moduleConfig, {
+  base: yuiLibDirPath + '/'
+});
+config.groups.main.base = baseDirPath + '/';
 
 console.log('Base dir path:', baseDirPath);
 console.log('Main file path: ', mainFilePath);
