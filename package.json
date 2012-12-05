@@ -1,6 +1,6 @@
 {
   "name": "yoda",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Yoda is a YUI loader. It loads YUI modules and compiles them down.",
   "main": "index.js",
   "bin": {
